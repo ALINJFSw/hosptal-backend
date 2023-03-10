@@ -5,4 +5,4 @@ $user = "root";
 $password = '';
 $db_name = "hospitals_db";
 
-$mysqli = mysqli($host_name, $user, $password, $db_name);
+$mysqli =new  mysqli($host_name, $user, $password, $db_name);
