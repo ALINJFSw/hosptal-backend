@@ -15,16 +15,32 @@ if(isset($_POST["type"])&& isset($_POST["email"])
         $query -> execute();
         $type_id = $mysqli->insert_id;
 
+
         $email = $_POST["email"];
         $password = $_POST["password"];
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
         $name = $_POST["name"];
         $dob = $_POST["dob"];
-        
-        $sql = "insert into users(name, email,password,dob,user_type) values (?,?,?,?,?) ";
-        $query = $mysqli -> prepare($sql);
-        $query->bind_param("ssssi",$name, $email, $password, $dob, $type_id);
-        $result = $query -> execute();
-        $user_id = $mysqli->insert_id;
+
+        $check_username = $mysqli->prepare('select email from users where email=?');
+        $check_username->bind_param('s', $email);
+        $check_username->execute();
+        $check_username->store_result();
+        $username_exists = $check_username->num_rows();
+        if($username_exists > 0 ){
+            $response["result"] = "user exist ";
+
+    echo json_encode($response);
+    return;
+        }
+        else {
+            $sql = "insert into users(name, email,password,dob,user_type) values (?,?,?,?,?) ";
+            $query = $mysqli -> prepare($sql);
+            $query->bind_param("ssssi",$name, $email, $hashed_password, $dob, $type_id);
+            $result = $query -> execute();
+            $user_id = $mysqli->insert_id;
+        }
+      
 
         if($result) {
             $response["result"] = "added succes";
