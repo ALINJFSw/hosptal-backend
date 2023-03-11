@@ -8,12 +8,7 @@ if(isset($_POST["type"])&& isset($_POST["email"])
     && isset($_POST["name"])
     && isset($_POST["dob"])){
 
-        $type =$_POST["type"];    
-        $sql = "insert into user_types (type) values(?)";
-        $query = $mysqli -> prepare($sql);
-        $query->bind_param("s",$type);
-        $query -> execute();
-        $type_id = $mysqli->insert_id;
+       
 
 
         $email = $_POST["email"];
@@ -22,6 +17,9 @@ if(isset($_POST["type"])&& isset($_POST["email"])
         $name = $_POST["name"];
         $dob = $_POST["dob"];
 
+       
+
+        
         $check_username = $mysqli->prepare('select email from users where email=?');
         $check_username->bind_param('s', $email);
         $check_username->execute();
@@ -29,21 +27,38 @@ if(isset($_POST["type"])&& isset($_POST["email"])
         $username_exists = $check_username->num_rows();
         if($username_exists > 0 ){
             $response["result"] = "user exist ";
+            echo json_encode($response);
+            die();
 
-    echo json_encode($response);
-    return;
         }
         else {
+            $type =$_POST["type"]; 
+            $sql = "insert into user_types (type) values(?)";
+            $query = $mysqli -> prepare($sql);
+            $query->bind_param("s",$type);
+            $query -> execute();
+            $type_id = $mysqli->insert_id;
+            
+            if($type == "admin" && substr($password,0,5) != "admin"){
+                $response["result"] = "your are not allowd to be admin";
+                echo json_encode($response);
+                exit();
+            }   
             $sql = "insert into users(name, email,password,dob,user_type) values (?,?,?,?,?) ";
             $query = $mysqli -> prepare($sql);
             $query->bind_param("ssssi",$name, $email, $hashed_password, $dob, $type_id);
             $result = $query -> execute();
             $user_id = $mysqli->insert_id;
+            
         }
       
 
         if($result) {
             $response["result"] = "added succes";
+            if($type == "admin"){
+                echo json_encode($response);
+                exit();
+            }
         }
 
 }
@@ -52,7 +67,7 @@ else {
     $response["result"] = "error inputs data";
 
     echo json_encode($response);
-    return;
+    exit();
 }
 
 if($_POST["type"] == "patient"
