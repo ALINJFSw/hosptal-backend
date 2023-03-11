@@ -52,6 +52,31 @@ function getUserInfoByName($email)
         return $data;
     }
 }
+function getUserInfoById($user_id)
+{
+    $data = [];
+    include('connection.php');
+    $query = $mysqli->prepare('select u.user_id,u.name,u.email,u.password,u.dob,t.type from users u,user_types t where
+    u.user_type = t.user_type and
+    u.user_id=?');
+    $query->bind_param('s', $user_id);
+    $query->execute();
+
+    $query->store_result();
+    $num_rows = $query->num_rows();
+    $query->bind_result($user_id, $name, $user_email, $hashed_password, $dob, $user_type);
+    $query->fetch();
+    if ($num_rows == 0) {
+        return;
+    } else {
+        $data["user_id"] = $user_id;
+        $data["user_email"] = $user_email;
+        $data["name"] = $name;
+        $data["dob"] = $dob;
+        $data["user_type"] = $user_type;
+        return $data;
+    }
+}
 
 
 function getEmptyRoom($department_id){
