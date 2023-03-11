@@ -42,7 +42,6 @@ function getUserInfoByName($email)
     $query->bind_result($user_id, $name, $user_email, $hashed_password, $dob, $user_type);
     $query->fetch();
     if ($num_rows == 0) {
-        $response['response'] = "user not found";
         return;
     } else {
         $data["user_id"] = $user_id;
@@ -51,5 +50,50 @@ function getUserInfoByName($email)
         $data["dob"] = $dob;
         $data["user_type"] = $user_type;
         return $data;
+    }
+}
+
+
+function getEmptyRoom($department_id){
+    $data = [];
+    include('connection.php');
+    $query = $mysqli->prepare('select * from rooms where department_id = ?');
+    $query->bind_param('i', $department_id);
+    $query->execute();
+
+    $query->store_result();
+    $num_rows = $query->num_rows();
+    $query->bind_result($room_id,$room_number, $number_beds, $floor_number, $phone_number, $cost_per_day, $is_vip, $department_id, $busy_bed);
+    $query->fetch();
+    if ($num_rows == 0) {
+        return;
+    } else {
+        $data["room_id"] = $room_id;
+        $data["room_number"] = $room_number;
+        $data["number_beds"] = $number_beds;
+        $data["floo_number"] = $floor_number;
+        $data["phone_number"] = $phone_number;
+        $data["cost_per_day"] = $cost_per_day;
+        $data["is_vip"] = $is_vip;
+        $data["department_id"] = $department_id;
+        $data["busy_bed"] = $busy_bed;
+        return $data;
+    }
+}
+
+function getHospitalId($user_id){
+    include('connection.php');
+    $query = $mysqli->prepare('select hospital_id from hospital_users where user_id = ?');
+    $query->bind_param('i', $user_id);
+    $query->execute();
+
+    $query->store_result();
+    $num_rows = $query->num_rows();
+    $query->bind_result($hospital_id);
+    $query->fetch();
+    if ($num_rows == 0) {
+        return;
+    } else {
+        return $hospital_id;
     }
 }

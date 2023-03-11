@@ -14,6 +14,7 @@ if (
     $hospital = $_POST["hospital"];
     $hos_info = getHospitalInfoByName($hospital);
     $user_info = getUserInfoByName($email);
+    print(json_encode($user_info));
     $is_active = "true";
     $dj = "today";
 
