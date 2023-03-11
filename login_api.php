@@ -2,9 +2,10 @@
 include("connection.php");
 require './php-jwt/src/JWT.php';
 use Firebase\JWT\JWT;
+
 $response = [];
 
-if(isset($_POST["email"]) && isset($_POST["password"])){
+if (isset($_POST["email"]) && isset($_POST["password"])) {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
@@ -16,13 +17,11 @@ if(isset($_POST["email"]) && isset($_POST["password"])){
 
     $query->store_result();
     $num_rows = $query->num_rows();
-    $query->bind_result($user_id, $name,$user_email, $hashed_password, $dob, $user_type);
+    $query->bind_result($user_id, $name, $user_email, $hashed_password, $dob, $user_type);
     $query->fetch();
     if ($num_rows == 0) {
         $response['response'] = "user not found";
-    }
-
-    else {
+    } else {
         if (password_verify($password, $hashed_password)) {
             $response['result'] = "logged in";
             // $response['user_id'] = $user_id;
@@ -30,13 +29,13 @@ if(isset($_POST["email"]) && isset($_POST["password"])){
             // $response['type'] = $user_type;
 
             $secret_key = 'alinjsecretkey';
-            $date   = new DateTimeImmutable();
-            $expire_at  = $date->modify('+60 minutes')->getTimestamp();      
+            $date = new DateTimeImmutable();
+            $expire_at = $date->modify('+60 minutes')->getTimestamp();
             // $domainName = "localhost";
             $user = $user_email;
             $request_data = [
-                'exp'  => $expire_at,                          
-                'userName' => $user,                     
+                'exp' => $expire_at,
+                'userName' => $user,
             ];
             $response["token"] = JWT::encode(
                 $request_data,
@@ -51,12 +50,9 @@ if(isset($_POST["email"]) && isset($_POST["password"])){
 
 
 
-}
-
-else {
+} else {
     $response["result"] = "error";
 
 }
 
 echo json_encode($response);
-
