@@ -7,9 +7,10 @@ if ($data["user_type"] == "admin") {
     $result = $mysqli->query('select * from services where accepted = 0');
 
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
-        $arr = [];
-        $arr["patients_id"] = $row["0"];
         $emp_data = getUserInfoById($row[1]);
+        $patient_data = getUserInfoById($row["0"]);
+        $arr = [];
+        $arr["patient_email"] = $patient_data["user_email"];
         $arr["employe_email"] = $emp_data["user_email"];
         $arr["description"] = $row["2"];
         $arr["cost"] = $row["3"];

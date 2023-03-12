@@ -42,6 +42,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
                 $secret_key,
                 "HS512"
             );
+            $response["user_type"] = $user_type;
 
         } else {
             $response["result"] = "Incorrect password";
